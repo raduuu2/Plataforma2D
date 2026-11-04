@@ -1,76 +1,47 @@
 using UnityEngine;
 
-/// <summary>
-/// Cámara que sube con el jugador pero NUNCA baja.
-/// Si el jugador sale por la parte de abajo de la pantalla, muere.
-/// Al reaparecer en un checkpoint, la cámara se recoloca a esa altura.
-/// Ponlo en la Main Camera (que debe ser Orthographic).
-/// </summary>
-[RequireComponent(typeof(Camera))]
 public class CamaraSeguimiento : MonoBehaviour
 {
-    public PlayerHealth jugador;
+    public Player player;
 
-    [Tooltip("Cuánto por encima del jugador queda el centro de la cámara (positivo = ves más hacia arriba).")]
-    public float desplazamientoY = 2f;
-    [Tooltip("Suavizado del movimiento (más alto = más rápido).")]
-    public float suavizado = 5f;
-    [Tooltip("Margen por debajo del borde inferior antes de morir.")]
-    public float margenMuerte = 0.5f;
+    public float offsetY = 1f;
 
-    [Header("Horizontal")]
-    [Tooltip("Desactívalo si el nivel cabe a lo ancho en pantalla (cámara fija en X).")]
-    public bool seguirEnX = false;
+    public float smooth = 5f;
 
-    private Camera cam;
-    private float alturaMaxima;
-    private bool estabaMuerto;
+    // Si el jugador baja más que esto por debajo del centro de la cámara, muere
+    public float deathDistance = 6f;
 
-    void Awake()
-    {
-        cam = GetComponent<Camera>();
-        if (jugador == null) jugador = FindAnyObjectByType<PlayerHealth>();
-    }
+    private float maxY;
 
     void Start()
     {
-        if (jugador != null) Recolocar(jugador.transform.position);
-        else alturaMaxima = transform.position.y;
+        maxY = player.transform.position.y + offsetY;
     }
 
     void LateUpdate()
     {
-        if (jugador == null) return;
-
-        // Acaba de reaparecer (estaba muerto y ya no): bajamos la cámara al checkpoint
-        if (estabaMuerto && !jugador.IsDead) Recolocar(jugador.transform.position);
-        estabaMuerto = jugador.IsDead;
-        if (jugador.IsDead) return;
-
-        // Solo sube: el objetivo nunca es más bajo que lo máximo alcanzado
-        float objetivoY = jugador.transform.position.y + desplazamientoY;
-        if (objetivoY > alturaMaxima) alturaMaxima = objetivoY;
-
-        Vector3 pos = transform.position;
-        pos.y = Mathf.Lerp(pos.y, alturaMaxima, suavizado * Time.deltaTime);
-        if (seguirEnX) pos.x = Mathf.Lerp(pos.x, jugador.transform.position.x, suavizado * Time.deltaTime);
-        transform.position = pos;
-
-        // ¿Ha salido por abajo?
-        float bordeInferior = transform.position.y - cam.orthographicSize;
-        if (jugador.transform.position.y < bordeInferior - margenMuerte)
+        // Si ha muerto, la cámara vuelve a la altura del checkpoint
+        if (player.isDead == true)
         {
-            jugador.Die();
+            maxY = player.respawnPoint.y + offsetY;
         }
-    }
 
-    /// <summary>Coloca la cámara de golpe a la altura del punto indicado.</summary>
-    void Recolocar(Vector3 punto)
-    {
-        alturaMaxima = punto.y + desplazamientoY;
-        Vector3 pos = transform.position;
-        pos.y = alturaMaxima;
-        if (seguirEnX) pos.x = punto.x;
-        transform.position = pos;
+        // Solo sube cuando el jugador está en el suelo y más alto que antes (nunca baja)
+        if (player.isGrounded == true && player.transform.position.y + offsetY > maxY)
+        {
+            maxY = player.transform.position.y + offsetY;
+        }
+
+        float x = Mathf.Lerp(transform.position.x, player.transform.position.x, smooth * Time.deltaTime);
+
+        float y = Mathf.Lerp(transform.position.y, maxY, smooth * Time.deltaTime);
+
+        transform.position = new Vector3(x, y, -10f);
+
+        // ¿Se ha caído por debajo de la pantalla?
+        if (player.transform.position.y < transform.position.y - deathDistance)
+        {
+            player.Die();
+        }
     }
 }

@@ -1,197 +1,139 @@
+using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-/// <summary>
-/// Controla al caballero: movimiento lateral, salto, animaciones y muerte/reaparición.
-/// Requiere Rigidbody2D y un Collider2D en el mismo objeto.
-/// </summary>
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Collider2D))]
 public class Player : MonoBehaviour
 {
-    [Header("Movimiento")]
-    public float velocidad = 6f;
+    public float speed = 6f;
 
-    [Header("Salto")]
-    public float fuerzaSalto = 12f;
-    [Tooltip("Margen (segundos) para saltar justo después de salir de una plataforma.")]
-    public float coyoteTime = 0.1f;
-    [Tooltip("Margen (segundos) para que cuente un salto pulsado justo antes de tocar el suelo.")]
-    public float jumpBuffer = 0.1f;
-    [Tooltip("Al soltar el botón de salto en subida, la velocidad vertical se multiplica por esto (salto variable).")]
-    [Range(0f, 1f)] public float cortarSalto = 0.5f;
+    public float jumpForce = 14f;
 
-    [Header("Detección de suelo")]
-    [Tooltip("Capas que cuentan como suelo. Si se deja en Nothing, cuenta cualquier collider.")]
-    public LayerMask capaSuelo;
+    public bool isGrounded = false;
 
-    [Header("Referencias (opcional)")]
-    public Animator animator;
+    public bool isDead = false;
 
-    // Multiplicadores que usarán los power-ups (1 = normal)
-    [HideInInspector] public float multVelocidad = 1f;
-    [HideInInspector] public float multSalto = 1f;
+    public Vector3 respawnPoint;
 
-    public bool EnSuelo { get; private set; }
-    public bool EstaMuerto { get; private set; }
+    // Los power-ups cambian estos valores (1 = normal)
+    public float speedMultiplier = 1f;
+
+    public float jumpMultiplier = 1f;
 
     private Rigidbody2D rb;
-    private Collider2D col;
-    private float inputX;
-    private float tiempoDesdeSuelo;
-    private float tiempoDesdeSaltoPulsado = float.MaxValue;
-    private Vector3 puntoReaparicion;
 
-    void Awake()
+    private Animator animator;
+
+    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<Collider2D>();
-        if (animator == null) animator = GetComponent<Animator>();
 
-        rb.freezeRotation = true;
-        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.freezeRotation = true; // Que el personaje no se caiga de lado al chocar
 
-        puntoReaparicion = transform.position;
+        animator = GetComponent<Animator>();
+
+        respawnPoint = transform.position;
     }
 
     void Update()
     {
-        if (EstaMuerto) return;
-
-        LeerInput();
-        ComprobarSuelo();
-
-        // Salto con coyote time + buffer
-        if (tiempoDesdeSaltoPulsado <= jumpBuffer && tiempoDesdeSuelo <= coyoteTime)
+        if (isDead == true)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto * multSalto);
-            tiempoDesdeSaltoPulsado = float.MaxValue;
-            tiempoDesdeSuelo = float.MaxValue;
+            return;
         }
 
-        // Salto variable: si sueltas el botón mientras subes, salta menos
-        if (SaltoSoltado() && rb.linearVelocity.y > 0f)
+        // Movimiento lateral
+        float dir = 0f;
+
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * cortarSalto);
+            dir = -1f;
+        }
+        else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+        {
+            dir = 1f;
         }
 
-        // Girar el sprite
-        if (inputX > 0.01f) transform.localScale = new Vector3(1, 1, 1);
-        else if (inputX < -0.01f) transform.localScale = new Vector3(-1, 1, 1);
+        rb.linearVelocity = new Vector2(dir * speed * speedMultiplier, rb.linearVelocity.y);
 
-        ActualizarAnimaciones();
-    }
-
-    void FixedUpdate()
-    {
-        if (EstaMuerto) return;
-        rb.linearVelocity = new Vector2(inputX * velocidad * multVelocidad, rb.linearVelocity.y);
-    }
-
-    // ---------------- Input (teclado y mando) ----------------
-
-    void LeerInput()
-    {
-        inputX = 0f;
-        var kb = Keyboard.current;
-        var pad = Gamepad.current;
-
-        if (kb != null)
+        // Girar al personaje hacia donde camina
+        if (dir < 0)
         {
-            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) inputX -= 1f;
-            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) inputX += 1f;
+            transform.localScale = new Vector3(-1, 1, 1);
         }
-        if (pad != null && Mathf.Abs(pad.leftStick.x.ReadValue()) > 0.2f)
+        else if (dir > 0)
         {
-            inputX = pad.leftStick.x.ReadValue();
+            transform.localScale = new Vector3(1, 1, 1);
         }
 
-        bool saltoPulsado =
-            (kb != null && (kb.spaceKey.wasPressedThisFrame || kb.wKey.wasPressedThisFrame || kb.upArrowKey.wasPressedThisFrame)) ||
-            (pad != null && pad.buttonSouth.wasPressedThisFrame);
+        // Salto
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce * jumpMultiplier);
 
-        if (saltoPulsado) tiempoDesdeSaltoPulsado = 0f;
-        else tiempoDesdeSaltoPulsado += Time.deltaTime;
+            isGrounded = false;
+        }
+
+        // Animaciones
+        if (animator != null)
+        {
+            animator.SetFloat("movement", Mathf.Abs(dir));
+
+            animator.SetBool("enSuelo", isGrounded);
+
+            animator.SetFloat("velocidadY", rb.linearVelocity.y);
+        }
     }
 
-    bool SaltoSoltado()
+    // Mientras toca algo, miramos si ese algo está DEBAJO de los pies
+    // (normal.y > 0.5 significa que la superficie mira hacia arriba, o sea, es suelo y no una pared)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        var kb = Keyboard.current;
-        var pad = Gamepad.current;
-        return (kb != null && (kb.spaceKey.wasReleasedThisFrame || kb.wKey.wasReleasedThisFrame || kb.upArrowKey.wasReleasedThisFrame)) ||
-               (pad != null && pad.buttonSouth.wasReleasedThisFrame);
+        if (collision.GetContact(0).normal.y > 0.5f)
+        {
+            isGrounded = true;
+        }
     }
 
-    // ---------------- Suelo ----------------
-
-    void ComprobarSuelo()
+    private void OnCollisionExit2D(Collision2D collision)
     {
-        // ¿Estamos tocando algo cuya superficie mira hacia arriba? (= tenemos algo debajo de los pies)
-        // Si "Capa Suelo" está en Nothing, vale cualquier collider sólido.
-        ContactFilter2D filtro = new ContactFilter2D();
-        filtro.useTriggers = false;
-        filtro.SetNormalAngle(45f, 135f);
-        if (capaSuelo.value != 0) filtro.SetLayerMask(capaSuelo);
-
-        EnSuelo = rb.IsTouching(filtro);
-
-        if (EnSuelo) tiempoDesdeSuelo = 0f;
-        else tiempoDesdeSuelo += Time.deltaTime;
+        isGrounded = false;
     }
 
-    // ---------------- Animaciones ----------------
-
-    void ActualizarAnimaciones()
+    // Lo llaman la cámara (si te caes), los enemigos o la lava
+    public void Die()
     {
-        if (animator == null || animator.runtimeAnimatorController == null) return;
-        animator.SetFloat("movement", Mathf.Abs(inputX));
-        animator.SetBool("enSuelo", EnSuelo);
-        animator.SetFloat("velocidadY", rb.linearVelocity.y);
-    }
+        if (isDead == true)
+        {
+            return;
+        }
 
-    // ---------------- Muerte y checkpoints ----------------
+        isDead = true;
 
-    /// <summary>Lo llamará el checkpoint al tocarlo.</summary>
-    public void SetCheckpoint(Vector3 posicion)
-    {
-        puntoReaparicion = posicion;
-    }
-
-    /// <summary>Se lanza al reaparecer (la cámara lo usa para volver a bajar al checkpoint).</summary>
-    public event System.Action<Vector3> AlReaparecer;
-
-    /// <summary>Lo llamarán los enemigos, la cámara (caída) o la lava.</summary>
-    public void Morir()
-    {
-        if (EstaMuerto) return;
-        EstaMuerto = true;
         rb.linearVelocity = Vector2.zero;
-        rb.simulated = false; // se queda quieto y no choca con nada mientras está muerto
 
-        if (GameManager.Instance != null) GameManager.Instance.JugadorMuerto();
+        rb.simulated = false;
 
-        bool partidaTerminada = GameManager.Instance != null && GameManager.Instance.PartidaTerminada;
-        if (!partidaTerminada) Invoke(nameof(Reaparecer), 0.6f);
+        GameManager.Instance.PlayerDied();
+
+        if (GameManager.Instance.gameOver == false)
+        {
+            StartCoroutine(Respawn());
+        }
     }
 
-    public void Reaparecer()
+    IEnumerator Respawn()
     {
-        transform.position = puntoReaparicion;
+        yield return new WaitForSeconds(1f);
+
+        transform.position = respawnPoint;
+
         rb.simulated = true;
-        rb.linearVelocity = Vector2.zero;
-        multVelocidad = 1f;
-        multSalto = 1f;
-        EstaMuerto = false;
-        AlReaparecer?.Invoke(puntoReaparicion);
-    }
 
-    void OnDrawGizmosSelected()
-    {
-        var c = GetComponent<Collider2D>();
-        if (c == null) return;
-        Bounds b = c.bounds;
-        Gizmos.color = EnSuelo ? Color.green : Color.red;
-        Gizmos.DrawWireCube(new Vector3(b.center.x, b.min.y - 0.025f), new Vector3(b.size.x * 0.9f, 0.05f));
+        rb.linearVelocity = Vector2.zero;
+
+        speedMultiplier = 1f;
+
+        jumpMultiplier = 1f;
+
+        isDead = false;
     }
 }

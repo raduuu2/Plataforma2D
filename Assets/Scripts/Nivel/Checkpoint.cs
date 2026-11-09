@@ -12,7 +12,8 @@ public class Checkpoint : MonoBehaviour
 
             other.GetComponent<Player>().respawnPoint = transform.position;
 
-            GetComponent<SpriteRenderer>().color = Color.green;
+            // El cartel empieza gris (apagado) y se ilumina al activarlo
+            GetComponent<SpriteRenderer>().color = Color.white;
         }
     }
 }

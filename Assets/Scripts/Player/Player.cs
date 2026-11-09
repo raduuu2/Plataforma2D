@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -18,9 +17,58 @@ public class Player : MonoBehaviour
 
     public float jumpMultiplier = 1f;
 
+    // Con el escudo los enemigos no te matan
+    public bool escudo = false;
+
+    // Nombre del power-up que tienes y el tiempo que le queda
+    public string powerUpActivo = "";
+
+    public float tiempoPowerUp = 0f;
+
+    // Ataque con la espada
+    public float radioAtaque = 1.2f;
+
+    public float tiempoEntreAtaques = 0.4f;
+
+    private float contadorAtaque = 0f;
+
+    // Sonidos
+    public AudioClip sonidoSalto;
+
+    public AudioClip sonidoAtaque;
+
+    public AudioClip sonidoDanio;
+
+    public AudioClip sonidoCaida;
+
+    public AudioClip sonidoMuerte;
+
+    public AudioClip sonidoPaso1;
+
+    public AudioClip sonidoPaso2;
+
+    // Volumen del sonido de daño (de 0 a 1)
+    public float volumenDanio = 0.4f;
+
+    // Cada cuánto suena un paso al caminar
+    public float tiempoEntrePasos = 0.3f;
+
+    private float contadorPasos = 0f;
+
+    private bool tocaPaso1 = true;
+
+    // Al reaparecer eres invencible un rato (y parpadeas)
+    public float tiempoInvencibleAlReaparecer = 2f;
+
+    private float tiempoInvencible = 0f;
+
+    private AudioSource audioSource;
+
     private Rigidbody2D rb;
 
     private Animator animator;
+
+    private SpriteRenderer sr;
 
     void Start()
     {
@@ -30,12 +78,23 @@ public class Player : MonoBehaviour
 
         animator = GetComponent<Animator>();
 
+        sr = GetComponent<SpriteRenderer>();
+
+        // Altavoz para los sonidos del jugador
+        audioSource = gameObject.AddComponent<AudioSource>();
+
         respawnPoint = transform.position;
     }
 
     void Update()
     {
         if (isDead == true)
+        {
+            return;
+        }
+
+        // Si la partida ha terminado o está en pausa no nos movemos
+        if (GameManager.Instance.gameOver == true || GameManager.Instance.paused == true)
         {
             return;
         }
@@ -64,12 +123,65 @@ public class Player : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         }
 
+        // Pasos: si camina por el suelo, suena un paso cada cierto tiempo (alternando los dos)
+        contadorPasos -= Time.deltaTime;
+
+        if (dir != 0 && isGrounded == true && contadorPasos <= 0)
+        {
+            if (tocaPaso1 == true)
+            {
+                ReproducirSonido(sonidoPaso1);
+            }
+            else
+            {
+                ReproducirSonido(sonidoPaso2);
+            }
+
+            tocaPaso1 = !tocaPaso1;
+
+            contadorPasos = tiempoEntrePasos;
+        }
+
         // Salto
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce * jumpMultiplier);
 
             isGrounded = false;
+
+            ReproducirSonido(sonidoSalto);
+        }
+
+        // Ataque (tecla F o clic izquierdo)
+        contadorAtaque -= Time.deltaTime;
+
+        if ((Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(0)) && contadorAtaque <= 0)
+        {
+            Atacar();
+        }
+
+        // Invencible después de reaparecer: parpadea encendiendo y apagando el dibujo
+        if (tiempoInvencible > 0)
+        {
+            tiempoInvencible -= Time.deltaTime;
+
+            sr.enabled = (int)(tiempoInvencible * 10) % 2 == 0;
+
+            if (tiempoInvencible <= 0)
+            {
+                sr.enabled = true;
+            }
+        }
+
+        // Tiempo del power-up
+        if (tiempoPowerUp > 0)
+        {
+            tiempoPowerUp -= Time.deltaTime;
+
+            if (tiempoPowerUp <= 0)
+            {
+                QuitarPowerUp();
+            }
         }
 
         // Animaciones
@@ -98,31 +210,182 @@ public class Player : MonoBehaviour
         isGrounded = false;
     }
 
-    // Lo llaman la cámara (si te caes), los enemigos o la lava
+    void Atacar()
+    {
+        contadorAtaque = tiempoEntreAtaques;
+
+        ReproducirSonido(sonidoAtaque);
+
+        if (animator != null)
+        {
+            animator.SetTrigger("atacar");
+        }
+
+        // Punto delante del caballero, a la altura del pecho
+        // (localScale.x es 1 si mira a la derecha y -1 si mira a la izquierda)
+        Vector3 puntoAtaque = transform.position + new Vector3(transform.localScale.x * 0.8f, 0.6f, 0f);
+
+        // Todo lo que toque ese círculo recibe el espadazo
+        Collider2D[] golpeados = Physics2D.OverlapCircleAll(puntoAtaque, radioAtaque);
+
+        foreach (Collider2D golpeado in golpeados)
+        {
+            EnemigoVolador enemigo = golpeado.GetComponent<EnemigoVolador>();
+
+            if (enemigo != null)
+            {
+                enemigo.Morir();
+            }
+
+            // También se pueden romper las bolas de fuego
+            Proyectil bola = golpeado.GetComponent<Proyectil>();
+
+            if (bola != null)
+            {
+                Destroy(bola.gameObject);
+            }
+        }
+    }
+
+    // Lo llama el script PowerUp al cogerlo
+    public void ActivarPowerUp(string tipo, float duracion)
+    {
+        QuitarPowerUp();
+
+        powerUpActivo = tipo;
+
+        tiempoPowerUp = duracion;
+
+        if (tipo == "Velocidad")
+        {
+            speedMultiplier = 1.6f;
+
+            sr.color = Color.yellow;
+        }
+
+        if (tipo == "Salto")
+        {
+            jumpMultiplier = 1.35f;
+
+            sr.color = Color.green;
+        }
+
+        if (tipo == "Escudo")
+        {
+            escudo = true;
+
+            sr.color = Color.cyan;
+        }
+    }
+
+    public void QuitarPowerUp()
+    {
+        speedMultiplier = 1f;
+
+        jumpMultiplier = 1f;
+
+        escudo = false;
+
+        powerUpActivo = "";
+
+        tiempoPowerUp = 0f;
+
+        sr.color = Color.white;
+    }
+
+    // Lo llama el enemigo cuando te toca
+    public void RecibirGolpe()
+    {
+        if (escudo == false)
+        {
+            Die();
+        }
+    }
+
+    // Saltito al pisar a un enemigo
+    public void Rebotar()
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce * 0.8f);
+    }
+
+    // Lo usan las monedas y el propio jugador para que suene algo
+    public void ReproducirSonido(AudioClip clip)
+    {
+        ReproducirSonido(clip, 1f);
+    }
+
+    // Igual, pero eligiendo el volumen (de 0 a 1)
+    public void ReproducirSonido(AudioClip clip, float volumen)
+    {
+        if (clip != null)
+        {
+            audioSource.PlayOneShot(clip, volumen);
+        }
+    }
+
+    // Lo llaman los enemigos, las bolas de fuego y la lava
     public void Die()
+    {
+        // Si está muerto o acaba de reaparecer, no le pasa nada
+        if (isDead == true || tiempoInvencible > 0)
+        {
+            return;
+        }
+
+        ReproducirSonido(sonidoDanio, volumenDanio);
+
+        Morir();
+    }
+
+    // Lo llama la cámara cuando te caes por debajo de la pantalla
+    public void Caer()
     {
         if (isDead == true)
         {
             return;
         }
 
+        ReproducirSonido(sonidoCaida);
+
+        Morir();
+    }
+
+    void Morir()
+    {
         isDead = true;
 
         rb.linearVelocity = Vector2.zero;
 
         rb.simulated = false;
 
+        QuitarPowerUp();
+
+        tiempoInvencible = 0f;
+
+        sr.enabled = true;
+
+        // Animación de muerte
+        if (animator != null)
+        {
+            animator.SetBool("muerto", true);
+        }
+
         GameManager.Instance.PlayerDied();
 
         if (GameManager.Instance.gameOver == false)
         {
-            StartCoroutine(Respawn());
+            Invoke("Respawn", 1f);
+        }
+        else
+        {
+            // Era la última vida
+            ReproducirSonido(sonidoMuerte);
         }
     }
 
-    IEnumerator Respawn()
+    void Respawn()
     {
-        yield return new WaitForSeconds(1f);
+        transform.SetParent(null); // por si murió encima de una plataforma móvil
 
         transform.position = respawnPoint;
 
@@ -130,9 +393,15 @@ public class Player : MonoBehaviour
 
         rb.linearVelocity = Vector2.zero;
 
-        speedMultiplier = 1f;
+        sr.color = Color.white;
 
-        jumpMultiplier = 1f;
+        if (animator != null)
+        {
+            animator.SetBool("muerto", false);
+        }
+
+        // Unos segundos de invencibilidad para que no te maten nada más aparecer
+        tiempoInvencible = tiempoInvencibleAlReaparecer;
 
         isDead = false;
     }

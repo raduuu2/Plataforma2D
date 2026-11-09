@@ -9,7 +9,7 @@ public class CamaraSeguimiento : MonoBehaviour
     public float smooth = 5f;
 
     // Si el jugador baja más que esto por debajo del centro de la cámara, muere
-    public float deathDistance = 6f;
+    public float deathDistance = 8.5f;
 
     private float maxY;
 
@@ -32,16 +32,15 @@ public class CamaraSeguimiento : MonoBehaviour
             maxY = player.transform.position.y + offsetY;
         }
 
-        float x = Mathf.Lerp(transform.position.x, player.transform.position.x, smooth * Time.deltaTime);
-
+        // En X se queda en el centro de la torre, solo se mueve en Y
         float y = Mathf.Lerp(transform.position.y, maxY, smooth * Time.deltaTime);
 
-        transform.position = new Vector3(x, y, -10f);
+        transform.position = new Vector3(0f, y, -10f);
 
         // ¿Se ha caído por debajo de la pantalla?
         if (player.transform.position.y < transform.position.y - deathDistance)
         {
-            player.Die();
+            player.Caer();
         }
     }
 }

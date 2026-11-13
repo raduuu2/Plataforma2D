@@ -166,7 +166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemigoVolador
   velocidad: 2
   distancia: 3
-  points: 50
+  puntos: 50
   proyectilPrefab: {fileID: 4100000000000000001, guid: 9c2d4e6f8a0b1c3d5e7f9a1b3c5d7e9f, type: 3}
   tiempoEntreDisparos: 3
   distanciaDisparo: 7

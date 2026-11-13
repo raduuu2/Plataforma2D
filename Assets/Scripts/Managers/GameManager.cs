@@ -6,19 +6,19 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public int points = 0;
+    public int puntos = 0;
 
-    public int lives = 3;
+    public int vidas = 3;
 
     public int monedas = 0;
 
     public float tiempo = 0f;
 
-    public bool gameOver = false;
+    public bool partidaTerminada = false;
 
-    public bool paused = false;
+    public bool pausado = false;
 
-    public Player player;
+    public Player jugador;
 
     // Sonido al llegar a la cima (opcional)
     public AudioClip sonidoVictoria;
@@ -35,11 +35,11 @@ public class GameManager : MonoBehaviour
     public Text textoPowerUp;
 
     // Paneles de la interfaz
-    public GameObject winPanel;
+    public GameObject panelVictoria;
 
-    public GameObject losePanel;
+    public GameObject panelDerrota;
 
-    public GameObject pausePanel;
+    public GameObject panelPausa;
 
     // Texto con los puntos finales en cada panel
     public Text textoFinalVictoria;
@@ -57,15 +57,15 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (gameOver == false && paused == false)
+        if (partidaTerminada == false && pausado == false)
         {
             tiempo += Time.deltaTime;
         }
 
         // Pausa con Escape
-        if (Input.GetKeyDown(KeyCode.Escape) && gameOver == false)
+        if (Input.GetKeyDown(KeyCode.Escape) && partidaTerminada == false)
         {
-            if (paused == true)
+            if (pausado == true)
             {
                 Reanudar();
             }
@@ -76,17 +76,17 @@ public class GameManager : MonoBehaviour
         }
 
         // Actualizar el HUD
-        textoPuntos.text = "Puntos: " + points;
+        textoPuntos.text = "Puntos: " + puntos;
 
-        textoVidas.text = "Vidas: " + lives;
+        textoVidas.text = "Vidas: " + vidas;
 
         textoMonedas.text = "Monedas: " + monedas;
 
         textoTiempo.text = "Tiempo: " + (int)tiempo;
 
-        if (player.powerUpActivo != "")
+        if (jugador.powerUpActivo != "")
         {
-            textoPowerUp.text = player.powerUpActivo + ": " + (int)player.tiempoPowerUp + "s";
+            textoPowerUp.text = jugador.powerUpActivo + ": " + (int)jugador.tiempoPowerUp + "s";
         }
         else
         {
@@ -94,85 +94,85 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddPoints(int amount)
+    public void SumarPuntos(int cantidad)
     {
-        points += amount;
+        puntos += cantidad;
     }
 
-    public void MonedaRecogida(int amount)
+    public void MonedaRecogida(int cantidad)
     {
         monedas += 1;
 
-        points += amount;
+        puntos += cantidad;
     }
 
-    public void PlayerDied()
+    public void JugadorMuerto()
     {
-        lives -= 1;
+        vidas -= 1;
 
-        if (lives <= 0)
+        if (vidas <= 0)
         {
-            lives = 0;
+            vidas = 0;
 
-            Lose();
+            Perder();
         }
     }
 
-    public void Win()
+    public void Ganar()
     {
-        gameOver = true;
+        partidaTerminada = true;
 
-        textoFinalVictoria.text = "Puntos: " + points + "\nMonedas: " + monedas + "\nTiempo: " + (int)tiempo + " s";
+        textoFinalVictoria.text = "Puntos: " + puntos + "\nMonedas: " + monedas + "\nTiempo: " + (int)tiempo + " s";
 
-        player.ReproducirSonido(sonidoVictoria);
+        jugador.ReproducirSonido(sonidoVictoria);
 
-        winPanel.SetActive(true);
+        panelVictoria.SetActive(true);
 
         Time.timeScale = 0f;
     }
 
-    public void Lose()
+    public void Perder()
     {
-        gameOver = true;
+        partidaTerminada = true;
 
-        textoFinalDerrota.text = "Puntos: " + points + "\nMonedas: " + monedas + "\nTiempo: " + (int)tiempo + " s";
+        textoFinalDerrota.text = "Puntos: " + puntos + "\nMonedas: " + monedas + "\nTiempo: " + (int)tiempo + " s";
 
-        losePanel.SetActive(true);
+        panelDerrota.SetActive(true);
 
         Time.timeScale = 0f;
     }
 
     public void Pausar()
     {
-        paused = true;
+        pausado = true;
 
-        pausePanel.SetActive(true);
+        panelPausa.SetActive(true);
 
         Time.timeScale = 0f;
     }
 
     public void Reanudar()
     {
-        paused = false;
+        pausado = false;
 
-        pausePanel.SetActive(false);
+        panelPausa.SetActive(false);
 
         Time.timeScale = 1f;
     }
 
     // Para los botones de los menús
-    public void Restart()
+    public void Reiniciar()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void GoToMenu()
+    public void IrAlMenu()
     {
         SceneManager.LoadScene("MenuPrincipal");
     }
 
-    public void GoToLava()
+    public void IrANivelNiebla()
     {
-        SceneManager.LoadScene("NivelLava");
+        SceneManager.LoadScene("NivelNiebla");
     }
 }

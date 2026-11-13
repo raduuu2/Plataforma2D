@@ -202,13 +202,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 618a814e1444db149bc9873a55bc8dcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
-  speed: 6
-  jumpForce: 14
-  isGrounded: 0
-  isDead: 0
-  respawnPoint: {x: 0, y: 0, z: 0}
-  speedMultiplier: 1
-  jumpMultiplier: 1
+  velocidad: 6
+  fuerzaSalto: 14
+  enSuelo: 0
+  muerto: 0
+  puntoReaparicion: {x: 0, y: 0, z: 0}
+  multiplicadorVelocidad: 1
+  multiplicadorSalto: 1
   escudo: 0
   powerUpActivo: 
   tiempoPowerUp: 0

@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
-    public bool activated = false;
+    public bool activado = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && activated == false)
+        if (other.CompareTag("Player") && activado == false)
         {
-            activated = true;
+            activado = true;
 
-            other.GetComponent<Player>().respawnPoint = transform.position;
+            other.GetComponent<Player>().puntoReaparicion = transform.position;
 
             // El cartel empieza gris (apagado) y se ilumina al activarlo
             GetComponent<SpriteRenderer>().color = Color.white;

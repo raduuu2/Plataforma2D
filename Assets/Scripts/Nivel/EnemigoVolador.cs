@@ -7,7 +7,7 @@ public class EnemigoVolador : MonoBehaviour
     // Cuánto se aleja a cada lado de donde empieza
     public float distancia = 3f;
 
-    public int points = 50;
+    public int puntos = 50;
 
     // Ataque: bola de fuego
     public GameObject proyectilPrefab;
@@ -30,7 +30,7 @@ public class EnemigoVolador : MonoBehaviour
 
     private SpriteRenderer sr;
 
-    private Player player;
+    private Player jugador;
 
     void Start()
     {
@@ -38,7 +38,7 @@ public class EnemigoVolador : MonoBehaviour
 
         sr = GetComponent<SpriteRenderer>();
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        jugador = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         // Así no disparan todos a la vez
         contadorDisparo = Random.Range(1f, tiempoEntreDisparos);
@@ -75,9 +75,9 @@ public class EnemigoVolador : MonoBehaviour
         {
             contadorDisparo = tiempoEntreDisparos;
 
-            float distanciaAlJugador = Vector2.Distance(transform.position, player.transform.position);
+            float distanciaAlJugador = Vector2.Distance(transform.position, jugador.transform.position);
 
-            if (distanciaAlJugador < distanciaDisparo && player.isDead == false)
+            if (distanciaAlJugador < distanciaDisparo && jugador.muerto == false)
             {
                 Disparar();
             }
@@ -89,7 +89,7 @@ public class EnemigoVolador : MonoBehaviour
         GameObject bola = Instantiate(proyectilPrefab, transform.position, Quaternion.identity);
 
         // Apuntamos al pecho del jugador (su posición está en los pies)
-        Vector3 objetivo = player.transform.position + new Vector3(0f, 0.6f, 0f);
+        Vector3 objetivo = jugador.transform.position + new Vector3(0f, 0.6f, 0f);
 
         bola.GetComponent<Proyectil>().direccion = (objetivo - transform.position).normalized;
     }
@@ -104,9 +104,9 @@ public class EnemigoVolador : MonoBehaviour
 
         muerto = true;
 
-        GameManager.Instance.AddPoints(points);
+        GameManager.Instance.SumarPuntos(puntos);
 
-        player.ReproducirSonido(sonidoMuerte);
+        jugador.ReproducirSonido(sonidoMuerte);
 
         // Ya no puede hacer daño
         GetComponent<Collider2D>().enabled = false;
@@ -121,8 +121,6 @@ public class EnemigoVolador : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Player jugador = other.GetComponent<Player>();
-
             // Si el jugador le cae encima, muere el enemigo
             if (jugador.transform.position.y > transform.position.y)
             {

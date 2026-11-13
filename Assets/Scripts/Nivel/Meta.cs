@@ -6,7 +6,7 @@ public class Meta : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            GameManager.Instance.Win();
+            GameManager.Instance.Ganar();
         }
     }
 }

@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 6088342627132289551, guid: a314c037591333c478f39e0f566c9d2b, type: 3}
+  m_Sprite: {fileID: 8646258412965949863, guid: b3ea6ce6d43ce1543ba79237d99256ff, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -141,5 +141,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74091dbc74354d24991a27396c3b1385, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Moneda
-  points: 10
+  puntos: 10
   sonido: {fileID: 8300000, guid: d803f1250eac9854f966a143b8a7b761, type: 3}
+  fotogramas:
+  - {fileID: 8646258412965949863, guid: b3ea6ce6d43ce1543ba79237d99256ff, type: 3}
+  - {fileID: 5940636120846219473, guid: b3ea6ce6d43ce1543ba79237d99256ff, type: 3}
+  - {fileID: 2519985479929397053, guid: b3ea6ce6d43ce1543ba79237d99256ff, type: 3}
+  - {fileID: 1645545972934186958, guid: b3ea6ce6d43ce1543ba79237d99256ff, type: 3}
+  - {fileID: 8666003884616273161, guid: b3ea6ce6d43ce1543ba79237d99256ff, type: 3}
+  chispaPrefab: {fileID: 4100000000000000001, guid: d5b2f6c3e4a74b8c9d0e1f2a3b4c5d01, type: 3}

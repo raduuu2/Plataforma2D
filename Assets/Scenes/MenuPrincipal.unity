@@ -419,7 +419,7 @@ GameObject:
   - component: {fileID: 112258509}
   - component: {fileID: 112258508}
   m_Layer: 0
-  m_Name: Boton_NivelLava
+  m_Name: Boton_NivelNiebla
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -491,7 +491,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1063843694}
         m_TargetAssemblyTypeName: MenuPrincipal, Assembly-CSharp
-        m_MethodName: JugarLava
+        m_MethodName: JugarNiebla
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -621,7 +621,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -100
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 01826c847c3ea9249ab7cd514c0cd379, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4ca184e48cbf9d440b5113063aa8a2c1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1156,7 +1156,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Nivel Lava
+  m_Text: Nivel Niebla
 --- !u!222 &905768398
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2463,6 +2463,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f7a2c9e1b3d4e5f8a6b7c8d9e0f1a2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  brilloLunaPrefab: {fileID: 4100000000000000041, guid: d5b2f6c3e4a74b8c9d0e1f2a3b4c5d05, type: 3}
+  luciernagaPrefab: {fileID: 4100000000000000021, guid: d5b2f6c3e4a74b8c9d0e1f2a3b4c5d03, type: 3}
+  polvoPrefab: {fileID: 4100000000000000031, guid: d5b2f6c3e4a74b8c9d0e1f2a3b4c5d04, type: 3}
 --- !u!114 &1678033472
 MonoBehaviour:
   m_ObjectHideFlags: 0

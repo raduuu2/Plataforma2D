@@ -10,9 +10,9 @@ public class MenuPrincipal : MonoBehaviour
         SceneManager.LoadScene("Nivel1");
     }
 
-    public void JugarLava()
+    public void JugarNiebla()
     {
-        SceneManager.LoadScene("NivelLava");
+        SceneManager.LoadScene("NivelNiebla");
     }
 
     public void MostrarControles()

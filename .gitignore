@@ -106,3 +106,7 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Archivos sin usar movidos durante la limpieza (se puede borrar)
+/_Papelera/
+/Plataforma2D/

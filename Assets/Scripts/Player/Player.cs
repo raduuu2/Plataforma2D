@@ -2,20 +2,20 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float speed = 6f;
+    public float velocidad = 6f;
 
-    public float jumpForce = 14f;
+    public float fuerzaSalto = 14f;
 
-    public bool isGrounded = false;
+    public bool enSuelo = false;
 
-    public bool isDead = false;
+    public bool muerto = false;
 
-    public Vector3 respawnPoint;
+    public Vector3 puntoReaparicion;
 
     // Los power-ups cambian estos valores (1 = normal)
-    public float speedMultiplier = 1f;
+    public float multiplicadorVelocidad = 1f;
 
-    public float jumpMultiplier = 1f;
+    public float multiplicadorSalto = 1f;
 
     // Con el escudo los enemigos no te matan
     public bool escudo = false;
@@ -83,42 +83,42 @@ public class Player : MonoBehaviour
         // Altavoz para los sonidos del jugador
         audioSource = gameObject.AddComponent<AudioSource>();
 
-        respawnPoint = transform.position;
+        puntoReaparicion = transform.position;
     }
 
     void Update()
     {
-        if (isDead == true)
+        if (muerto == true)
         {
             return;
         }
 
         // Si la partida ha terminado o está en pausa no nos movemos
-        if (GameManager.Instance.gameOver == true || GameManager.Instance.paused == true)
+        if (GameManager.Instance.partidaTerminada == true || GameManager.Instance.pausado == true)
         {
             return;
         }
 
         // Movimiento lateral
-        float dir = 0f;
+        float direccion = 0f;
 
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
-            dir = -1f;
+            direccion = -1f;
         }
         else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
-            dir = 1f;
+            direccion = 1f;
         }
 
-        rb.linearVelocity = new Vector2(dir * speed * speedMultiplier, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(direccion * velocidad * multiplicadorVelocidad, rb.linearVelocity.y);
 
         // Girar al personaje hacia donde camina
-        if (dir < 0)
+        if (direccion < 0)
         {
             transform.localScale = new Vector3(-1, 1, 1);
         }
-        else if (dir > 0)
+        else if (direccion > 0)
         {
             transform.localScale = new Vector3(1, 1, 1);
         }
@@ -126,7 +126,7 @@ public class Player : MonoBehaviour
         // Pasos: si camina por el suelo, suena un paso cada cierto tiempo (alternando los dos)
         contadorPasos -= Time.deltaTime;
 
-        if (dir != 0 && isGrounded == true && contadorPasos <= 0)
+        if (direccion != 0 && enSuelo == true && contadorPasos <= 0)
         {
             if (tocaPaso1 == true)
             {
@@ -143,11 +143,11 @@ public class Player : MonoBehaviour
         }
 
         // Salto
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+        if (Input.GetKeyDown(KeyCode.Space) && enSuelo == true)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce * jumpMultiplier);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto * multiplicadorSalto);
 
-            isGrounded = false;
+            enSuelo = false;
 
             ReproducirSonido(sonidoSalto);
         }
@@ -187,9 +187,9 @@ public class Player : MonoBehaviour
         // Animaciones
         if (animator != null)
         {
-            animator.SetFloat("movement", Mathf.Abs(dir));
+            animator.SetFloat("movimiento", Mathf.Abs(direccion));
 
-            animator.SetBool("enSuelo", isGrounded);
+            animator.SetBool("enSuelo", enSuelo);
 
             animator.SetFloat("velocidadY", rb.linearVelocity.y);
         }
@@ -201,13 +201,13 @@ public class Player : MonoBehaviour
     {
         if (collision.GetContact(0).normal.y > 0.5f)
         {
-            isGrounded = true;
+            enSuelo = true;
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        isGrounded = false;
+        enSuelo = false;
     }
 
     void Atacar()
@@ -258,14 +258,14 @@ public class Player : MonoBehaviour
 
         if (tipo == "Velocidad")
         {
-            speedMultiplier = 1.6f;
+            multiplicadorVelocidad = 1.6f;
 
             sr.color = Color.yellow;
         }
 
         if (tipo == "Salto")
         {
-            jumpMultiplier = 1.35f;
+            multiplicadorSalto = 1.35f;
 
             sr.color = Color.green;
         }
@@ -280,9 +280,9 @@ public class Player : MonoBehaviour
 
     public void QuitarPowerUp()
     {
-        speedMultiplier = 1f;
+        multiplicadorVelocidad = 1f;
 
-        jumpMultiplier = 1f;
+        multiplicadorSalto = 1f;
 
         escudo = false;
 
@@ -298,14 +298,14 @@ public class Player : MonoBehaviour
     {
         if (escudo == false)
         {
-            Die();
+            RecibirDanio();
         }
     }
 
     // Saltito al pisar a un enemigo
     public void Rebotar()
     {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce * 0.8f);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto * 0.8f);
     }
 
     // Lo usan las monedas y el propio jugador para que suene algo
@@ -323,11 +323,11 @@ public class Player : MonoBehaviour
         }
     }
 
-    // Lo llaman los enemigos, las bolas de fuego y la lava
-    public void Die()
+    // Lo llaman los enemigos, las bolas de fuego y la niebla
+    public void RecibirDanio()
     {
         // Si está muerto o acaba de reaparecer, no le pasa nada
-        if (isDead == true || tiempoInvencible > 0)
+        if (muerto == true || tiempoInvencible > 0)
         {
             return;
         }
@@ -340,7 +340,7 @@ public class Player : MonoBehaviour
     // Lo llama la cámara cuando te caes por debajo de la pantalla
     public void Caer()
     {
-        if (isDead == true)
+        if (muerto == true)
         {
             return;
         }
@@ -352,7 +352,7 @@ public class Player : MonoBehaviour
 
     void Morir()
     {
-        isDead = true;
+        muerto = true;
 
         rb.linearVelocity = Vector2.zero;
 
@@ -370,9 +370,9 @@ public class Player : MonoBehaviour
             animator.SetBool("muerto", true);
         }
 
-        GameManager.Instance.PlayerDied();
+        GameManager.Instance.JugadorMuerto();
 
-        if (GameManager.Instance.gameOver == false)
+        if (GameManager.Instance.partidaTerminada == false)
         {
             Invoke("Respawn", 1f);
         }
@@ -387,7 +387,7 @@ public class Player : MonoBehaviour
     {
         transform.SetParent(null); // por si murió encima de una plataforma móvil
 
-        transform.position = respawnPoint;
+        transform.position = puntoReaparicion;
 
         rb.simulated = true;
 
@@ -403,6 +403,6 @@ public class Player : MonoBehaviour
         // Unos segundos de invencibilidad para que no te maten nada más aparecer
         tiempoInvencible = tiempoInvencibleAlReaparecer;
 
-        isDead = false;
+        muerto = false;
     }
 }

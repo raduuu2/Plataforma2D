@@ -27,7 +27,7 @@ public class Musica : MonoBehaviour
     {
         // Si has perdido todas las vidas paramos la música para que se oiga el Game Over
         // (en el menú no hay GameManager, por eso miramos que no sea null)
-        if (GameManager.Instance != null && GameManager.Instance.lives <= 0 && fuente.isPlaying)
+        if (GameManager.Instance != null && GameManager.Instance.vidas <= 0 && fuente.isPlaying)
         {
             fuente.Stop();
         }

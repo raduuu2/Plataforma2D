@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Nivel1.unity
     guid: d7e8284576e0d334bae2929af6fd098e
   - enabled: 1
-    path: Assets/Scenes/NivelLava.unity
+    path: Assets/Scenes/NivelNiebla.unity
     guid: 8e7bd3efeeda9ec408063c5170e1dc07
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

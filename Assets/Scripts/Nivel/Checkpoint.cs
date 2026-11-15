@@ -6,6 +6,9 @@ public class Checkpoint : MonoBehaviour
 
     public AudioClip sonido;
 
+    // Volumen del sonido (de 0 a 1)
+    public float volumen = 0.4f;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player") && activado == false)
@@ -16,7 +19,7 @@ public class Checkpoint : MonoBehaviour
 
             jugador.puntoReaparicion = transform.position;
 
-            jugador.ReproducirSonido(sonido);
+            jugador.ReproducirSonido(sonido, volumen);
 
             // El cartel empieza gris (apagado) y se ilumina al activarlo
             GetComponent<SpriteRenderer>().color = Color.white;

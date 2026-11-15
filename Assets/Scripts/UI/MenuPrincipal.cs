@@ -8,6 +8,9 @@ public class MenuPrincipal : MonoBehaviour
     // Sonido al pulsar los botones
     public AudioClip sonidoBoton;
 
+    // Volumen del sonido (de 0 a 1)
+    public float volumenBoton = 0.4f;
+
     private AudioSource audioSource;
 
     // Escena que se carga después de que suene el botón
@@ -60,7 +63,7 @@ public class MenuPrincipal : MonoBehaviour
     {
         if (sonidoBoton != null)
         {
-            audioSource.PlayOneShot(sonidoBoton);
+            audioSource.PlayOneShot(sonidoBoton, volumenBoton);
         }
     }
 }

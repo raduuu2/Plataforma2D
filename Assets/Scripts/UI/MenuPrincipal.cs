@@ -5,28 +5,62 @@ public class MenuPrincipal : MonoBehaviour
 {
     public GameObject panelControles;
 
+    // Sonido al pulsar los botones
+    public AudioClip sonidoBoton;
+
+    private AudioSource audioSource;
+
+    // Escena que se carga después de que suene el botón
+    private string escenaACargar;
+
+    void Start()
+    {
+        audioSource = gameObject.AddComponent<AudioSource>();
+    }
+
     public void Jugar()
     {
-        SceneManager.LoadScene("Nivel1");
+        SonarBoton();
+
+        escenaACargar = "Nivel1";
+
+        // Esperamos un poquito para que se oiga el sonido antes de cambiar de escena
+        Invoke("CargarEscena", 0.3f);
     }
 
     public void JugarNiebla()
     {
-        SceneManager.LoadScene("NivelNiebla");
+        SonarBoton();
+
+        escenaACargar = "NivelNiebla";
+
+        Invoke("CargarEscena", 0.3f);
+    }
+
+    void CargarEscena()
+    {
+        SceneManager.LoadScene(escenaACargar);
     }
 
     public void MostrarControles()
     {
+        SonarBoton();
+
         panelControles.SetActive(true);
     }
 
     public void OcultarControles()
     {
+        SonarBoton();
+
         panelControles.SetActive(false);
     }
 
-    public void Salir()
+    void SonarBoton()
     {
-        Application.Quit();
+        if (sonidoBoton != null)
+        {
+            audioSource.PlayOneShot(sonidoBoton);
+        }
     }
 }

@@ -152,3 +152,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Checkpoint
   activado: 0
+  sonido: {fileID: 8300000, guid: 5968114c4f2c54f409328814bab0b418, type: 3}

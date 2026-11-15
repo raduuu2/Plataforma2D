@@ -110,3 +110,6 @@ InitTestScene*.unity*
 # Archivos sin usar movidos durante la limpieza (se puede borrar)
 /_Papelera/
 /Plataforma2D/
+
+# Notas personales (no se suben)
+/RESUMEN_CAMBIOS.txt

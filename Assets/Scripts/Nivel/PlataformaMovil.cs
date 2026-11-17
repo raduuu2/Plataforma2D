@@ -62,7 +62,15 @@ public class PlataformaMovil : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        // Si la plataforma se está desactivando (salir de Play, cambiar de escena...)
+        // Unity no deja cambiar el padre, así que no hacemos nada
+        if (gameObject.activeInHierarchy == false)
+        {
+            return;
+        }
+
+        // Solo lo soltamos si sigue siendo hijo de ESTA plataforma
+        if (collision.gameObject.CompareTag("Player") && collision.transform.parent == transform)
         {
             collision.transform.SetParent(null);
         }

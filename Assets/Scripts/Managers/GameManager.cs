@@ -53,6 +53,9 @@ public class GameManager : MonoBehaviour
         Instance = this;
 
         Time.timeScale = 1f;
+
+        // Máximo 60 FPS. Sin esto el juego va a miles de FPS y en ordenadores flojos se cuelga
+        Application.targetFrameRate = 60;
     }
 
     private void Update()

@@ -17,16 +17,42 @@ public class EnemigoVolador : MonoBehaviour
     // Solo dispara si el jugador está más cerca que esto
     public float distanciaDisparo = 7f;
 
+    // Tiempo que tarda en cargar la bola antes de dispararla (así el jugador ve que va a disparar)
+    public float tiempoCarga = 0.7f;
+
     // Sonido al morir (opcional)
     public AudioClip sonidoMuerte;
+
+    // Sonido al escupir la bola (opcional)
+    public AudioClip sonidoDisparo;
+
+    // Efectos del disparo (los mismos que usan las monedas y los power-ups)
+    public GameObject chispaPrefab;
+
+    public GameObject aroPrefab;
+
+    public Color colorFuego = new Color(1f, 0.55f, 0.2f);
+
+    // Cuánto sube y baja mientras vuela
+    public float alturaFlote = 0.25f;
+
+    public float velocidadFlote = 3f;
 
     private bool muerto = false;
 
     private float contadorDisparo;
 
+    // Si es mayor que 0, está cargando la bola
+    private float contadorCarga = 0f;
+
     private Vector3 inicio;
 
+    private float posX;
+
     private int direccion = 1;
+
+    // Para que no floten todos a la vez
+    private float desfase;
 
     private SpriteRenderer sr;
 
@@ -36,12 +62,16 @@ public class EnemigoVolador : MonoBehaviour
     {
         inicio = transform.position;
 
+        posX = inicio.x;
+
         sr = GetComponent<SpriteRenderer>();
 
         jugador = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         // Así no disparan todos a la vez
         contadorDisparo = Random.Range(1f, tiempoEntreDisparos);
+
+        desfase = Random.Range(0f, 10f);
     }
 
     void Update()
@@ -52,32 +82,88 @@ public class EnemigoVolador : MonoBehaviour
             return;
         }
 
-        // Va de un lado a otro como la pelota del Pong
-        transform.position += Vector3.right * direccion * velocidad * Time.deltaTime;
+        // Mientras carga la bola casi se para
+        float velocidadActual = velocidad;
 
-        if (transform.position.x > inicio.x + distancia)
+        if (contadorCarga > 0)
+        {
+            velocidadActual = velocidad * 0.2f;
+        }
+
+        // Va de un lado a otro como la pelota del Pong
+        posX += direccion * velocidadActual * Time.deltaTime;
+
+        if (posX > inicio.x + distancia)
         {
             direccion = -1;
         }
 
-        if (transform.position.x < inicio.x - distancia)
+        if (posX < inicio.x - distancia)
         {
             direccion = 1;
         }
 
-        // El dibujo del demonio mira a la izquierda, así que lo giramos al ir a la derecha
-        sr.flipX = direccion == 1;
+        // Y además sube y baja suavemente, como si aleteara
+        float y = inicio.y + Mathf.Sin(Time.time * velocidadFlote + desfase) * alturaFlote;
 
-        // Disparar cada cierto tiempo si el jugador está cerca
-        contadorDisparo -= Time.deltaTime;
+        transform.position = new Vector3(posX, y, 0f);
 
-        if (contadorDisparo <= 0)
+        if (contadorCarga > 0)
         {
-            contadorDisparo = tiempoEntreDisparos;
+            Cargar();
+        }
+        else
+        {
+            // El dibujo del demonio mira a la izquierda, así que lo giramos al ir a la derecha
+            sr.flipX = direccion == 1;
 
-            float distanciaAlJugador = Vector2.Distance(transform.position, jugador.transform.position);
+            // Disparar cada cierto tiempo si el jugador está cerca
+            contadorDisparo -= Time.deltaTime;
 
-            if (distanciaAlJugador < distanciaDisparo && jugador.muerto == false)
+            if (contadorDisparo <= 0)
+            {
+                contadorDisparo = tiempoEntreDisparos;
+
+                float distanciaAlJugador = Vector2.Distance(transform.position, jugador.transform.position);
+
+                if (distanciaAlJugador < distanciaDisparo && jugador.muerto == false)
+                {
+                    // Empieza a cargar la bola
+                    contadorCarga = tiempoCarga;
+                }
+            }
+        }
+    }
+
+    // Mientras carga: mira al jugador, se hincha y parpadea en naranja
+    void Cargar()
+    {
+        contadorCarga -= Time.deltaTime;
+
+        // De 0 (empieza a cargar) a 1 (dispara)
+        float progreso = 1f - contadorCarga / tiempoCarga;
+
+        // Mira hacia el jugador (el dibujo mira a la izquierda)
+        sr.flipX = jugador.transform.position.x > transform.position.x;
+
+        // Se va hinchando
+        float escala = 1f + 0.2f * progreso;
+
+        transform.localScale = new Vector3(escala, escala, 1f);
+
+        // Parpadea entre blanco y naranja
+        float parpadeo = (Mathf.Sin(Time.time * 30f) + 1f) / 2f;
+
+        sr.color = Color.Lerp(Color.white, colorFuego, parpadeo);
+
+        if (contadorCarga <= 0)
+        {
+            // Vuelve a la normalidad y dispara
+            transform.localScale = Vector3.one;
+
+            sr.color = Color.white;
+
+            if (jugador.muerto == false)
             {
                 Disparar();
             }
@@ -86,12 +172,36 @@ public class EnemigoVolador : MonoBehaviour
 
     void Disparar()
     {
-        GameObject bola = Instantiate(proyectilPrefab, transform.position, Quaternion.identity);
-
         // Apuntamos al pecho del jugador (su posición está en los pies)
         Vector3 objetivo = jugador.transform.position + new Vector3(0f, 0.6f, 0f);
 
-        bola.GetComponent<Proyectil>().direccion = (objetivo - transform.position).normalized;
+        Vector3 haciaJugador = (objetivo - transform.position).normalized;
+
+        // La bola sale un poco por delante, de la boca
+        Vector3 boca = transform.position + haciaJugador * 0.7f;
+
+        GameObject bola = Instantiate(proyectilPrefab, boca, Quaternion.identity);
+
+        bola.GetComponent<Proyectil>().direccion = haciaJugador;
+
+        // Fogonazo: un aro y unas chispas
+        if (aroPrefab != null)
+        {
+            GameObject aro = Instantiate(aroPrefab, boca, Quaternion.identity);
+
+            aro.GetComponent<Aro>().tamanoFinal = 1.5f;
+
+            aro.GetComponent<Aro>().duracion = 0.3f;
+
+            aro.GetComponent<SpriteRenderer>().color = colorFuego;
+        }
+
+        if (chispaPrefab != null)
+        {
+            Chispa.Explosion(chispaPrefab, boca, colorFuego, 8);
+        }
+
+        jugador.ReproducirSonido(sonidoDisparo, 0.6f);
     }
 
     // Lo llama el caballero al darle con la espada, o al pisarlo
@@ -103,6 +213,11 @@ public class EnemigoVolador : MonoBehaviour
         }
 
         muerto = true;
+
+        // Lo dejamos con su color y tamaño normal para que la animación se vea bien
+        sr.color = Color.white;
+
+        transform.localScale = Vector3.one;
 
         GameManager.Instance.SumarPuntos(puntos);
 

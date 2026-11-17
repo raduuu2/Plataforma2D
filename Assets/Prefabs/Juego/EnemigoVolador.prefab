@@ -170,3 +170,6 @@ MonoBehaviour:
   proyectilPrefab: {fileID: 4100000000000000001, guid: 9c2d4e6f8a0b1c3d5e7f9a1b3c5d7e9f, type: 3}
   tiempoEntreDisparos: 3
   distanciaDisparo: 7
+  chispaPrefab: {fileID: 4100000000000000001, guid: d5b2f6c3e4a74b8c9d0e1f2a3b4c5d01, type: 3}
+  aroPrefab: {fileID: 4100000000000000011, guid: d5b2f6c3e4a74b8c9d0e1f2a3b4c5d02, type: 3}
+  tiempoCarga: 0.7

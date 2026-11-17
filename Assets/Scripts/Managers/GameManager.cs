@@ -171,6 +171,9 @@ public class GameManager : MonoBehaviour
 
     public void IrAlMenu()
     {
+        // Al perder o ganar el tiempo se queda parado, lo volvemos a poner normal
+        Time.timeScale = 1f;
+
         SceneManager.LoadScene("MenuPrincipal");
     }
 

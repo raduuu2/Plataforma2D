@@ -12223,7 +12223,7 @@ PrefabInstance:
       objectReference: {fileID: 950936528}
     - target: {fileID: 6654940008167898708, guid: b711340228bfd5f4da19ffb43c22f0ad, type: 3}
       propertyPath: velocidad
-      value: 0.45
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 6860673406786655452, guid: b711340228bfd5f4da19ffb43c22f0ad, type: 3}
       propertyPath: m_Name

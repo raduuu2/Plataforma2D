@@ -26,7 +26,13 @@ public class Player : MonoBehaviour
     public float tiempoPowerUp = 0f;
 
     // Ataque con la espada
-    public float radioAtaque = 1.2f;
+    public float radioAtaque = 0.7f;
+
+    // Cuánto por delante del caballero está el golpe
+    public float alcanceAtaque = 0.9f;
+
+    // Lo que tarda la espada en bajar en la animación (el golpe cuenta en ese momento)
+    public float retrasoGolpe = 0.15f;
 
     public float tiempoEntreAtaques = 0.4f;
 
@@ -221,9 +227,20 @@ public class Player : MonoBehaviour
             animator.SetTrigger("atacar");
         }
 
+        // El golpe cuenta cuando la espada baja, no nada más pulsar
+        Invoke("Golpear", retrasoGolpe);
+    }
+
+    void Golpear()
+    {
+        if (muerto == true)
+        {
+            return;
+        }
+
         // Punto delante del caballero, a la altura del pecho
         // (localScale.x es 1 si mira a la derecha y -1 si mira a la izquierda)
-        Vector3 puntoAtaque = transform.position + new Vector3(transform.localScale.x * 0.8f, 0.6f, 0f);
+        Vector3 puntoAtaque = transform.position + new Vector3(transform.localScale.x * alcanceAtaque, 0.6f, 0f);
 
         // Todo lo que toque ese círculo recibe el espadazo
         Collider2D[] golpeados = Physics2D.OverlapCircleAll(puntoAtaque, radioAtaque);

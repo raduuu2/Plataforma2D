@@ -237,7 +237,12 @@ public class EnemigoVolador : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             // Si el jugador le cae encima, muere el enemigo
-            if (jugador.transform.position.y > transform.position.y)
+            // (los pies tienen que estar por encima del demonio y el jugador tiene que ir cayendo, no subiendo)
+            bool estaEncima = jugador.transform.position.y > transform.position.y + 0.2f;
+
+            bool cayendo = other.attachedRigidbody.linearVelocity.y <= 0.5f;
+
+            if (estaEncima == true && cayendo == true)
             {
                 jugador.Rebotar();
 

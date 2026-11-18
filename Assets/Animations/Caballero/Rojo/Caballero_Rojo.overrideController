@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Caballero_Rojo
+  m_Controller: {fileID: 9100000, guid: 918dc97e6e70c0e4dbd75ff0308eafc3, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 2e4f6a8b0c1d3e5f7a9b1c3d5e7f9a1b, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 8abd33130c9b4deca9f38e311ea2def4, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 2e4f6a8b0c1d3e5f7a9b1c3d5e7f9a2c, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 71202b2bee024f45b8bb8041da6638d2, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 0673360d9b7c2734fbe55e27cb9e7835, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 5ce80782bd3e469f947e1e27c1b532b7, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: f5329db8018a6e043bb81e0756cded0a, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: ca14d9950fef4cdd816ce8d10ea3a234, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 0fc417506e72a194fbf84af9f23bcce8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: d8e415fa951b458cb53acba09b51d8a9, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: daf3f022cd07f844f825611ffddaa18d, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: a953050dc6d54a9eb57ee3f7ef1ac8f3, type: 2}

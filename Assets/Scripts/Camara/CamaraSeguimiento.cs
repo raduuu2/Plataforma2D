@@ -8,13 +8,18 @@ public class CamaraSeguimiento : MonoBehaviour
 
     public float suavizado = 5f;
 
-    // Si el jugador baja más que esto por debajo del centro de la cámara, muere
-    public float distanciaMuerte = 8.5f;
+    // Cuánto tiene que bajar por debajo del borde de la pantalla para morir
+    // (1 = justo cuando el caballero ya no se ve)
+    public float margenMuerte = 1f;
 
     private float alturaMaxima;
 
+    private Camera cam;
+
     void Start()
     {
+        cam = GetComponent<Camera>();
+
         alturaMaxima = jugador.transform.position.y + alturaExtra;
     }
 
@@ -38,7 +43,11 @@ public class CamaraSeguimiento : MonoBehaviour
         transform.position = new Vector3(0f, y, -10f);
 
         // ¿Se ha caído por debajo de la pantalla?
-        if (jugador.transform.position.y < transform.position.y - distanciaMuerte)
+        // Se mira el borde de abajo de donde va la cámara (alturaMaxima), así muere
+        // en cuanto sale de la pantalla, aunque caiga encima de una plataforma que no se ve
+        float bordeAbajo = alturaMaxima - cam.orthographicSize;
+
+        if (jugador.muerto == false && jugador.transform.position.y < bordeAbajo - margenMuerte)
         {
             jugador.Caer();
         }

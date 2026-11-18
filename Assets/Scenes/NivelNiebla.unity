@@ -7255,22 +7255,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 7552268173129947524, guid: dfc0247b188f0054f99622a384ead0bd, type: 3}
-      propertyPath: colorNormal.r
-      value: 0.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552268173129947524, guid: dfc0247b188f0054f99622a384ead0bd, type: 3}
-      propertyPath: colorNormal.g
-      value: 0.85
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552268173129947524, guid: dfc0247b188f0054f99622a384ead0bd, type: 3}
-      propertyPath: colorNormal.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552268173129947524, guid: dfc0247b188f0054f99622a384ead0bd, type: 3}
-      propertyPath: colorNormal.a
-      value: 1
-      objectReference: {fileID: 0}
+    - target: {fileID: 5910126369949615497, guid: dfc0247b188f0054f99622a384ead0bd, type: 3}
+      propertyPath: m_Controller
+      value:
+      objectReference: {fileID: 22100000, guid: b99b185088924d35ae8f704af82cb1cf, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -27,6 +27,11 @@ public class ParedPantalla : MonoBehaviour
 
     private BoxCollider2D col;
 
+    // Borde de arriba (no se mueve nunca) y borde de abajo (baja si hace falta)
+    private float arriba;
+
+    private float abajo;
+
     void Start()
     {
         cam = Camera.main;
@@ -34,6 +39,10 @@ public class ParedPantalla : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
 
         col = GetComponent<BoxCollider2D>();
+
+        arriba = transform.position.y + sr.size.y / 2f;
+
+        abajo = transform.position.y - sr.size.y / 2f;
 
         // Según dónde esté sabemos qué es
         if (transform.position.x < -1f)
@@ -67,22 +76,37 @@ public class ParedPantalla : MonoBehaviour
         // Lo más adentro que llega la pared
         float bordeInterior = Mathf.Max(interiorMinimo, mitadPantalla - ancho);
 
+        // Que nunca se vea el final por abajo: si la pantalla llega más abajo, la estiramos
+        // (solo crece, así los ladrillos no se mueven cada fotograma)
+        float abajoPantalla = cam.transform.position.y - cam.orthographicSize - 1f;
+
+        if (abajoPantalla < abajo)
+        {
+            abajo = abajoPantalla;
+        }
+
+        float alto = arriba - abajo;
+
+        float centroY = (arriba + abajo) / 2f;
+
         if (lado == 0)
         {
             // El suelo llega hasta debajo de las dos paredes
             float anchoSuelo = (bordeInterior + ancho) * 2f;
 
-            sr.size = new Vector2(anchoSuelo, sr.size.y);
+            transform.position = new Vector3(transform.position.x, centroY, 0f);
 
-            col.size = new Vector2(anchoSuelo, col.size.y);
+            sr.size = new Vector2(anchoSuelo, alto);
+
+            col.size = new Vector2(anchoSuelo, alto);
         }
         else
         {
-            transform.position = new Vector3(lado * (bordeInterior + ancho / 2f), transform.position.y, 0f);
+            transform.position = new Vector3(lado * (bordeInterior + ancho / 2f), centroY, 0f);
 
-            sr.size = new Vector2(ancho, sr.size.y);
+            sr.size = new Vector2(ancho, alto);
 
-            col.size = new Vector2(ancho, col.size.y);
+            col.size = new Vector2(ancho, alto);
         }
     }
 }

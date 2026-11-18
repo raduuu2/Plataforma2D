@@ -50,6 +50,9 @@ public class CamaraSeguimiento : MonoBehaviour
         if (jugador.muerto == false && jugador.transform.position.y < bordeAbajo - margenMuerte)
         {
             jugador.Caer();
+
+            // Ha aparecido en el checkpoint: la cámara vuelve allí
+            alturaMaxima = jugador.puntoReaparicion.y + alturaExtra;
         }
     }
 }

@@ -43,6 +43,13 @@ public class Player : MonoBehaviour
 
     public AudioClip sonidoAtaque;
 
+    // Segundo del sonido de ataque desde el que empieza a sonar
+    // (si el archivo tiene un silencio al principio, súbelo un poco, por ejemplo 0.05)
+    public float inicioSonidoAtaque = 0f;
+
+    // Altavoz solo para el ataque: así cada golpe corta el anterior y no se amontonan
+    private AudioSource fuenteAtaque;
+
     public AudioClip sonidoDanio;
 
     public AudioClip sonidoCaida;
@@ -100,6 +107,10 @@ public class Player : MonoBehaviour
 
         // Altavoz para los sonidos del jugador
         audioSource = gameObject.AddComponent<AudioSource>();
+
+        fuenteAtaque = gameObject.AddComponent<AudioSource>();
+
+        fuenteAtaque.playOnAwake = false;
 
         puntoReaparicion = transform.position;
     }
@@ -232,7 +243,19 @@ public class Player : MonoBehaviour
     {
         contadorAtaque = tiempoEntreAtaques;
 
-        ReproducirSonido(sonidoAtaque);
+        // Cortamos el sonido del golpe anterior y empezamos el nuevo
+        if (sonidoAtaque != null)
+        {
+            fuenteAtaque.Stop();
+
+            fuenteAtaque.clip = sonidoAtaque;
+
+            fuenteAtaque.volume = volumenEfectos;
+
+            fuenteAtaque.time = Mathf.Min(inicioSonidoAtaque, sonidoAtaque.length - 0.01f);
+
+            fuenteAtaque.Play();
+        }
 
         if (animator != null)
         {
@@ -376,7 +399,26 @@ public class Player : MonoBehaviour
 
         ReproducirSonido(sonidoCaida);
 
-        Morir();
+        // Si era la última vida, muere normal (animación de muerte y fin de partida)
+        if (GameManager.Instance.vidas <= 1)
+        {
+            Morir();
+
+            return;
+        }
+
+        // Si no, pierde una vida y aparece al momento en el último checkpoint
+        GameManager.Instance.JugadorMuerto();
+
+        QuitarPowerUp();
+
+        Respawn();
+    }
+
+    // true mientras parpadea después de reaparecer (la niebla lo usa para no subir todavía)
+    public bool Reapareciendo()
+    {
+        return tiempoInvencible > 0;
     }
 
     void Morir()

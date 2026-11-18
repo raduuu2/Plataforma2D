@@ -56,7 +56,8 @@ public class Niebla : MonoBehaviour
             return;
         }
 
-        if (jugador.muerto == true)
+        // Al morir (o justo al reaparecer, si se ha caído) la niebla baja y espera
+        if (jugador.muerto == true || jugador.Reapareciendo() == true)
         {
             // Bajamos la niebla (rápido, pero sin teletransportarla) para que el jugador pueda reaparecer
             float limite = jugador.puntoReaparicion.y - distanciaReaparicion;

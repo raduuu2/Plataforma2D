@@ -20,7 +20,7 @@ sin caerse, esquivando a los enemigos y recogiendo monedas.
 
 ## Créditos
 
-- **Caballero**: pack de sprites "Knight" (ver `Assets/Sprites/Player/License_Knight.txt`).
-- **Demonio volador**: pack de sprites "Flying Demon" (ver `Assets/Sprites/Enemigos/License_FlyingDemon.txt`).
+- **Caballero**: Brullov. Licencia en `Assets/Sprites/Player/License_Knight.txt`.
+- **Demonio volador**: Brullov. Licencia en `Assets/Sprites/Enemigos/License_FlyingDemon.txt`.
 - **Calavera de fuego**: Will Tice ([untiedgames.com](http://untiedgames.com)).
   Licencia en `Assets/Sprites/Enemigos/license.txt`.

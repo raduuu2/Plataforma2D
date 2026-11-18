@@ -1,0 +1,68 @@
+RESUMEN - CAMBIOS EN LA NIEBLA (NivelNiebla)
+=============================================
+
+1. ASPECTO
+----------
+- Sprite nuevo: Assets/Sprites/Castillo/Niebla.png
+  Es un PNG normal de pixel art (32x64), color morado fantasmal.
+    * Mitad de arriba: la cresta ondulada con un borde claro brillante.
+    * Mitad de abajo: el cuerpo, que se repite en mosaico.
+  Se puede editar a mano con cualquier programa de pixel art.
+
+- Efectos hechos por código (Assets/Scripts/Nivel/Niebla.cs):
+    * Capa de atrás: una copia más clara de la niebla que asoma por encima
+      y se balancea hacia los lados. Se crea al darle al Play (CrearCapaAtras).
+    * "Respiración": la niebla se aclara y se oscurece un poco (Animar).
+    * Jirones: bolitas de niebla que salen por arriba, suben haciendo eses
+      y se desvanecen (CrearJirones). Su dibujo también se hace por código.
+
+
+2. MOVIMIENTO
+-------------
+- Sube a velocidad constante (0.5), sin acelerarse con la altura.
+- Si el jugador sube muy rápido y la niebla se queda atrás, ya no se
+  teletransporta ni pega tirones: sube un poco más rápido cuanto más
+  lejos está, y alcanza poco a poco.
+- Solo empieza a perseguir cuando casi ha desaparecido por abajo de la pantalla.
+- Al morir, la niebla baja rápido pero de forma continua (sin teletransportarse)
+  para que el jugador pueda reaparecer en el checkpoint.
+
+
+3. BUG ARREGLADO
+----------------
+- Antes, si entrabas en la niebla siendo invencible (justo al reaparecer),
+  al acabarse la invencibilidad no morías y te quedabas dentro.
+  Ahora se usa OnTriggerStay2D en vez de OnTriggerEnter2D y sí mueres.
+
+
+4. VALORES QUE SE PUEDEN CAMBIAR EN EL INSPECTOR (prefab Niebla)
+----------------------------------------------------------------
+Movimiento:
+  velocidad            0.5   Velocidad normal de subida.
+  aumentoPorAltura     0     Cuánto se acelera según sube (0 = siempre igual).
+  velocidadMaxima      1.2   Tope de velocidad (si aumentoPorAltura > 0).
+  alcancePorDistancia  0.5   Lo que acelera por cada unidad que se queda atrás.
+  distanciaMaxima      26    A partir de qué distancia bajo la cámara persigue.
+  velocidadBajada      40    Lo rápido que baja cuando mueres.
+  distanciaReaparicion 27    Cuánto baja por debajo del checkpoint al morir.
+
+Aspecto:
+  colorCapaAtras             Color de la capa de atrás.
+  balanceo             0.6   Cuánto se mueve hacia los lados la capa de atrás.
+  tiempoEntreJirones   0.15  Cada cuántos segundos sale un jirón.
+  colorJiron                 Color de los jirones.
+
+
+5. IDEAS PARA MÁS ADELANTE
+--------------------------
+1) Avisar cuando la niebla está cerca (la más importante):
+   borde morado en la pantalla, sonido que sube de volumen o
+   un pequeño temblor de cámara.
+2) Muerte especial por niebla: fogonazo morado o el personaje
+   deshaciéndose en jirones (se pueden reutilizar los prefabs Aro y Chispa).
+3) Que las plataformas que quedan dentro de la niebla se oscurezcan
+   o desaparezcan, como si la niebla se comiera la torre.
+4) Detalles visuales: ojos o brillos parpadeando dentro de la niebla,
+   o teñir la escena de morado cuanto más cerca está.
+5) Momentos de calma: que la niebla se pare unos segundos al pasar
+   un checkpoint.

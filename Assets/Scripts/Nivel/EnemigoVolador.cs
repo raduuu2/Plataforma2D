@@ -33,10 +33,20 @@ public class EnemigoVolador : MonoBehaviour
 
     public Color colorFuego = new Color(1f, 0.55f, 0.2f);
 
+    // Color del demonio (blanco = el del dibujo). Se cambia en cada nivel desde el Inspector
+    public Color colorNormal = Color.white;
+
     // Cuánto sube y baja mientras vuela
     public float alturaFlote = 0.25f;
 
     public float velocidadFlote = 3f;
+
+    // Animación hecha pasando dibujos, como la moneda (la usa la calavera, el demonio usa el Animator)
+    public Sprite[] fotogramas;
+
+    public float fotogramasPorSegundo = 12f;
+
+    private float contadorFotogramas = 0f;
 
     private bool muerto = false;
 
@@ -66,6 +76,9 @@ public class EnemigoVolador : MonoBehaviour
 
         sr = GetComponent<SpriteRenderer>();
 
+        // Color del demonio en este nivel (en el de la niebla es distinto)
+        sr.color = colorNormal;
+
         jugador = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
         // Así no disparan todos a la vez
@@ -80,6 +93,21 @@ public class EnemigoVolador : MonoBehaviour
         if (muerto == true)
         {
             return;
+        }
+
+        // Si tiene dibujos sueltos, los vamos pasando (mientras carga, el doble de rápido)
+        if (fotogramas.Length > 0)
+        {
+            float rapidez = fotogramasPorSegundo;
+
+            if (contadorCarga > 0)
+            {
+                rapidez = fotogramasPorSegundo * 2f;
+            }
+
+            contadorFotogramas += Time.deltaTime * rapidez;
+
+            sr.sprite = fotogramas[(int)contadorFotogramas % fotogramas.Length];
         }
 
         // Mientras carga la bola casi se para
@@ -151,17 +179,22 @@ public class EnemigoVolador : MonoBehaviour
 
         transform.localScale = new Vector3(escala, escala, 1f);
 
+        // Tiembla cada vez más, como si fuera a explotar
+        float temblor = Mathf.Sin(Time.time * 60f) * 0.06f * progreso;
+
+        transform.position += new Vector3(temblor, 0f, 0f);
+
         // Parpadea entre blanco y naranja
         float parpadeo = (Mathf.Sin(Time.time * 30f) + 1f) / 2f;
 
-        sr.color = Color.Lerp(Color.white, colorFuego, parpadeo);
+        sr.color = Color.Lerp(colorNormal, colorFuego, parpadeo);
 
         if (contadorCarga <= 0)
         {
             // Vuelve a la normalidad y dispara
             transform.localScale = Vector3.one;
 
-            sr.color = Color.white;
+            sr.color = colorNormal;
 
             if (jugador.muerto == false)
             {
@@ -201,7 +234,7 @@ public class EnemigoVolador : MonoBehaviour
             Chispa.Explosion(chispaPrefab, boca, colorFuego, 8);
         }
 
-        jugador.ReproducirSonido(sonidoDisparo, 0.6f);
+        jugador.ReproducirSonido(sonidoDisparo, 0.8f);
     }
 
     // Lo llama el caballero al darle con la espada, o al pisarlo
@@ -215,7 +248,7 @@ public class EnemigoVolador : MonoBehaviour
         muerto = true;
 
         // Lo dejamos con su color y tamaño normal para que la animación se vea bien
-        sr.color = Color.white;
+        sr.color = colorNormal;
 
         transform.localScale = Vector3.one;
 
@@ -226,10 +259,32 @@ public class EnemigoVolador : MonoBehaviour
         // Ya no puede hacer daño
         GetComponent<Collider2D>().enabled = false;
 
-        // Animación de muerte y lo borramos cuando termina
-        GetComponent<Animator>().SetTrigger("morir");
+        if (fotogramas.Length > 0)
+        {
+            // La calavera no tiene animación de morir: revienta en chispas y un aro
+            if (chispaPrefab != null)
+            {
+                Chispa.Explosion(chispaPrefab, transform.position, colorFuego, 16);
+            }
 
-        Destroy(gameObject, 0.7f);
+            if (aroPrefab != null)
+            {
+                GameObject aro = Instantiate(aroPrefab, transform.position, Quaternion.identity);
+
+                aro.GetComponent<Aro>().tamanoFinal = 2f;
+
+                aro.GetComponent<SpriteRenderer>().color = colorFuego;
+            }
+
+            Destroy(gameObject);
+        }
+        else
+        {
+            // Animación de muerte del demonio y lo borramos cuando termina
+            GetComponent<Animator>().SetTrigger("morir");
+
+            Destroy(gameObject, 0.7f);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)

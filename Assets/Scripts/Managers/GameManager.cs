@@ -127,7 +127,9 @@ public class GameManager : MonoBehaviour
 
         textoFinalVictoria.text = "Puntos: " + puntos + "\nMonedas: " + monedas + "\nTiempo: " + (int)tiempo + " s";
 
-        jugador.ReproducirSonido(sonidoVictoria);
+        // Canción de victoria (la música de fondo se para sola en el script Musica)
+        // (a tope, porque es una canción y no un efecto)
+        jugador.ReproducirSonido(sonidoVictoria, 1f);
 
         panelVictoria.SetActive(true);
 

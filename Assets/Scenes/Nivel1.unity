@@ -1084,7 +1084,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cancion: {fileID: 8300000, guid: 9d0c1698c2504614398031c36cc61278, type: 3}
-  volumen: 0.3
+  volumen: 0.35
 --- !u!1001 &93649895
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1751,7 +1751,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1092426734871101887, guid: 8aaab7d8529d1204b97d87cbcb22ae30, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.28
+      value: 2.45
       objectReference: {fileID: 0}
     - target: {fileID: 1092426734871101887, guid: 8aaab7d8529d1204b97d87cbcb22ae30, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2373,11 +2373,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4776392850283597755, guid: 3f07fd42dcadf8c49969359100fd97a5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.09
+      value: -3.72
       objectReference: {fileID: 0}
     - target: {fileID: 4776392850283597755, guid: 3f07fd42dcadf8c49969359100fd97a5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 71.19
+      value: 76.09
       objectReference: {fileID: 0}
     - target: {fileID: 4776392850283597755, guid: 3f07fd42dcadf8c49969359100fd97a5, type: 3}
       propertyPath: m_LocalPosition.z
@@ -9837,11 +9837,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1092426734871101887, guid: 8aaab7d8529d1204b97d87cbcb22ae30, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.55
+      value: 0.69
       objectReference: {fileID: 0}
     - target: {fileID: 1092426734871101887, guid: 8aaab7d8529d1204b97d87cbcb22ae30, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.04
+      value: 6.07
       objectReference: {fileID: 0}
     - target: {fileID: 1092426734871101887, guid: 8aaab7d8529d1204b97d87cbcb22ae30, type: 3}
       propertyPath: m_LocalPosition.z
@@ -15886,11 +15886,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6470071739592189688, guid: a5433523f7127934ca48d6b24653d740, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.1331568
+      value: -0.51
       objectReference: {fileID: 0}
     - target: {fileID: 6470071739592189688, guid: a5433523f7127934ca48d6b24653d740, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 205.33545
+      value: 206.4
       objectReference: {fileID: 0}
     - target: {fileID: 6470071739592189688, guid: a5433523f7127934ca48d6b24653d740, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17899,11 +17899,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4776392850283597755, guid: 3f07fd42dcadf8c49969359100fd97a5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.09
+      value: -3.73
       objectReference: {fileID: 0}
     - target: {fileID: 4776392850283597755, guid: 3f07fd42dcadf8c49969359100fd97a5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 80.84
+      value: 85.77
       objectReference: {fileID: 0}
     - target: {fileID: 4776392850283597755, guid: 3f07fd42dcadf8c49969359100fd97a5, type: 3}
       propertyPath: m_LocalPosition.z
@@ -20369,7 +20369,7 @@ MonoBehaviour:
   partidaTerminada: 0
   pausado: 0
   jugador: {fileID: 950936528}
-  sonidoVictoria: {fileID: 0}
+  sonidoVictoria: {fileID: 8300000, guid: 6b2e9d4f13a85c70e9f1d3b7a4c62e18, type: 3}
   textoPuntos: {fileID: 175252890}
   textoVidas: {fileID: 1139503701}
   textoMonedas: {fileID: 1366530763}
@@ -20866,7 +20866,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1092426734871101887, guid: 8aaab7d8529d1204b97d87cbcb22ae30, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.4
+      value: 1.57
       objectReference: {fileID: 0}
     - target: {fileID: 1092426734871101887, guid: 8aaab7d8529d1204b97d87cbcb22ae30, type: 3}
       propertyPath: m_LocalPosition.y

@@ -7,7 +7,7 @@ public class Checkpoint : MonoBehaviour
     public AudioClip sonido;
 
     // Volumen del sonido (de 0 a 1)
-    public float volumen = 0.4f;
+    public float volumen = 1f;
 
     private void OnTriggerEnter2D(Collider2D other)
     {

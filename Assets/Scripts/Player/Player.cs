@@ -34,7 +34,7 @@ public class Player : MonoBehaviour
     // Lo que tarda la espada en bajar en la animación (el golpe cuenta en ese momento)
     public float retrasoGolpe = 0.15f;
 
-    public float tiempoEntreAtaques = 0.4f;
+    public float tiempoEntreAtaques = 0.3f;
 
     private float contadorAtaque = 0f;
 
@@ -54,7 +54,16 @@ public class Player : MonoBehaviour
     public AudioClip sonidoPaso2;
 
     // Volumen del sonido de daño (de 0 a 1)
-    public float volumenDanio = 0.4f;
+    public float volumenDanio = 0.8f;
+
+    // Volumen de los pasos (suenan todo el rato, así que bajitos)
+    public float volumenPasos = 0.4f;
+
+    // Volumen de todos los efectos (salto, ataque, monedas...) para que se oiga bien la música
+    public float volumenEfectos = 0.4f;
+
+    // Color del caballero (blanco = el del dibujo). Se cambia en cada nivel desde el Inspector
+    public Color colorNormal = Color.white;
 
     // Cada cuánto suena un paso al caminar
     public float tiempoEntrePasos = 0.3f;
@@ -85,6 +94,9 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>();
 
         sr = GetComponent<SpriteRenderer>();
+
+        // Color del caballero en este nivel (en el de la niebla es distinto)
+        sr.color = colorNormal;
 
         // Altavoz para los sonidos del jugador
         audioSource = gameObject.AddComponent<AudioSource>();
@@ -136,11 +148,11 @@ public class Player : MonoBehaviour
         {
             if (tocaPaso1 == true)
             {
-                ReproducirSonido(sonidoPaso1);
+                ReproducirSonido(sonidoPaso1, volumenPasos);
             }
             else
             {
-                ReproducirSonido(sonidoPaso2);
+                ReproducirSonido(sonidoPaso2, volumenPasos);
             }
 
             tocaPaso1 = !tocaPaso1;
@@ -307,7 +319,7 @@ public class Player : MonoBehaviour
 
         tiempoPowerUp = 0f;
 
-        sr.color = Color.white;
+        sr.color = colorNormal;
     }
 
     // Lo llama el enemigo cuando te toca
@@ -336,7 +348,7 @@ public class Player : MonoBehaviour
     {
         if (clip != null)
         {
-            audioSource.PlayOneShot(clip, volumen);
+            audioSource.PlayOneShot(clip, volumen * volumenEfectos);
         }
     }
 
@@ -410,7 +422,7 @@ public class Player : MonoBehaviour
 
         rb.linearVelocity = Vector2.zero;
 
-        sr.color = Color.white;
+        sr.color = colorNormal;
 
         if (animator != null)
         {

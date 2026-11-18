@@ -213,7 +213,7 @@ MonoBehaviour:
   powerUpActivo: 
   tiempoPowerUp: 0
   radioAtaque: 0.7
-  tiempoEntreAtaques: 0.4
+  tiempoEntreAtaques: 0.3
   sonidoSalto: {fileID: 8300000, guid: 46334b9d5ac81ab4f87628aabc01cad4, type: 3}
   sonidoAtaque: {fileID: 8300000, guid: 392621c494bb2c74eb0f34c1a907accb, type: 3}
   sonidoDanio: {fileID: 8300000, guid: efd7d120dfac20240a1679a944cb1d48, type: 3}

@@ -7,7 +7,7 @@ public class Moneda : MonoBehaviour
     public AudioClip sonido;
 
     // Volumen del sonido (de 0 a 1)
-    public float volumen = 0.4f;
+    public float volumen = 0.8f;
 
     // Animación: los dibujos de la moneda girando (se pasan uno detrás de otro)
     public Sprite[] fotogramas;

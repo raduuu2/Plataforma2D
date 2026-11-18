@@ -6,7 +6,7 @@ public class Musica : MonoBehaviour
     public AudioClip cancion;
 
     // Volumen bajito para que se oigan bien los efectos (de 0 a 1)
-    public float volumen = 0.3f;
+    public float volumen = 0.35f;
 
     private AudioSource fuente;
 
@@ -25,9 +25,10 @@ public class Musica : MonoBehaviour
 
     void Update()
     {
-        // Si has perdido todas las vidas paramos la música para que se oiga el Game Over
+        // Si has perdido todas las vidas o has llegado a la meta, paramos la música
+        // para que se oiga el Game Over o la canción de victoria
         // (en el menú no hay GameManager, por eso miramos que no sea null)
-        if (GameManager.Instance != null && GameManager.Instance.vidas <= 0 && fuente.isPlaying)
+        if (GameManager.Instance != null && (GameManager.Instance.vidas <= 0 || GameManager.Instance.partidaTerminada == true) && fuente.isPlaying)
         {
             fuente.Stop();
         }

@@ -19,7 +19,7 @@ public class MenuPrincipal : MonoBehaviour
     public AudioClip sonidoBoton;
 
     // Volumen del sonido (de 0 a 1)
-    public float volumenBoton = 0.4f;
+    public float volumenBoton = 0.3f;
 
     private AudioSource audioSource;
 
